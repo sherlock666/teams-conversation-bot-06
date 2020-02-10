@@ -28,6 +28,18 @@ class TeamsConversationBot(TeamsActivityHandler):
             await self._message_all_members(turn_context)
             return
 
+        if turn_context.activity.text == "TestA":        
+            await turn_context.send_activity(
+                MessageFactory.text("Ending conversation from the skillA...")
+            )
+            return 
+
+        if turn_context.activity.text == "TestB":        
+            await turn_context.send_activity(
+                MessageFactory.text("Ending conversation from the skillB...")
+            )
+            return 
+
         if turn_context.activity.text == "Delete":
             await self._delete_card_activity(turn_context)
             return
