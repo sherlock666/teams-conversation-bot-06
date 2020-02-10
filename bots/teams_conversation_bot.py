@@ -22,7 +22,7 @@ class TeamsConversationBot(TeamsActivityHandler):
 
         if text == "TestA":        
             await turn_context.send_activity(
-                MessageFactory.text("Ending conversation from the skillA...")
+                MessageFactory.text("請輸入欲查詢地點\n(目前限台灣本島+離島)\n\n使用方式如下(已設有防呆):\n!台北市\n!臺北市\n!台北\n!臺北\n!taipei")
             )
             return 
 
@@ -37,7 +37,7 @@ class TeamsConversationBot(TeamsActivityHandler):
         if text == "!天氣預報":
             #content = "請輸入欲查詢地點\n(目前限台灣本島+離島)\n\n使用方式如下(已設有防呆):\n!台北市\n!臺北市\n!台北\n!臺北\n!taipei"
             await turn_context.send_activity(
-             MessageFactory.text("請輸入欲查詢地點\n(目前限台灣本島+離島)\n\n使用方式如下(已設有防呆):\n!台北市\n!臺北市\n!台北\n!臺北\n!taipei")
+                MessageFactory.text("請輸入欲查詢地點\n(目前限台灣本島+離島)\n\n使用方式如下(已設有防呆):\n!台北市\n!臺北市\n!台北\n!臺北\n!taipei")
             )
             return 0
 
