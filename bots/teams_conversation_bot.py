@@ -31,10 +31,6 @@ class TeamsConversationBot(TeamsActivityHandler):
                 MessageFactory.text("Ending conversation from the skillB...")
             )
             return 
-            await turn_context.send_activity(
-             MessageFactory.text(content)
-            )
-            return 0
 
 ##########***天氣預報***#########  
 
