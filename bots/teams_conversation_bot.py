@@ -6,6 +6,7 @@ from botbuilder.core.teams import TeamsActivityHandler, TeamsInfo
 from botbuilder.schema import CardAction, HeroCard, Mention, ConversationParameters
 from botbuilder.schema._connector_client_enums import ActionTypes
 
+from tools.weather import weather
 
 class TeamsConversationBot(TeamsActivityHandler):
     def __init__(self, app_id: str, app_password: str):
@@ -14,137 +15,171 @@ class TeamsConversationBot(TeamsActivityHandler):
 
     async def on_message_activity(self, turn_context: TurnContext):
         TurnContext.remove_recipient_mention(turn_context.activity)
-        turn_context.activity.text = turn_context.activity.text.strip()
+        #turn_context.activity.text = turn_context.activity.text.strip()
+        text = turn_context.activity.text.strip()
 
-        if turn_context.activity.text == "MentionMe":
-            await self._mention_activity(turn_context)
-            return
 
-        if turn_context.activity.text == "UpdateCardAction":
-            await self._update_card_activity(turn_context)
-            return
 
-        if turn_context.activity.text == "MessageAllMembers":
-            await self._message_all_members(turn_context)
-            return
-
-        if turn_context.activity.text == "TestA":        
+        if text == "TestA":        
             await turn_context.send_activity(
                 MessageFactory.text("Ending conversation from the skillA...")
             )
             return 
 
-        if turn_context.activity.text == "TestB":        
+        if text == "TestB":        
             await turn_context.send_activity(
                 MessageFactory.text("Ending conversation from the skillB...")
             )
             return 
-
-        if turn_context.activity.text == "Delete":
-            await self._delete_card_activity(turn_context)
-            return
-
-        card = HeroCard(
-            title="Welcome Card",
-            text="Click the buttons to update this card",
-            buttons=[
-                CardAction(
-                    type=ActionTypes.message_back,
-                    title="Update Card",
-                    text="UpdateCardAction",
-                    value={"count": 0},
-                ),
-                CardAction(
-                    type=ActionTypes.message_back,
-                    title="Message all memebers",
-                    text="MessageAllMembers",
-                ),
-            ],
-        )
-        await turn_context.send_activity(
-            MessageFactory.attachment(CardFactory.hero_card(card))
-        )
-        return
-
-    async def _mention_activity(self, turn_context: TurnContext):
-        mention = Mention(
-            mentioned=turn_context.activity.from_property,
-            text=f"<at>{turn_context.activity.from_property.name}</at>",
-            type="mention",
-        )
-
-        reply_activity = MessageFactory.text(f"Hello {mention.text}")
-        reply_activity.entities = [Mention().deserialize(mention.serialize())]
-        await turn_context.send_activity(reply_activity)
-
-    async def _update_card_activity(self, turn_context: TurnContext):
-        data = turn_context.activity.value
-        data["count"] += 1
-
-        card = CardFactory.hero_card(
-            HeroCard(
-                title="Welcome Card",
-                text=f"Updated count - {data['count']}",
-                buttons=[
-                    CardAction(
-                        type=ActionTypes.message_back,
-                        title="Update Card",
-                        value=data,
-                        text="UpdateCardAction",
-                    ),
-                    CardAction(
-                        type=ActionTypes.message_back,
-                        title="Message all members",
-                        text="MessageAllMembers",
-                    ),
-                    CardAction(
-                        type=ActionTypes.message_back,
-                        title="Delete card",
-                        text="Delete",
-                    ),
-                ],
+            await turn_context.send_activity(
+             MessageFactory.text(content)
             )
-        )
+            return 0
 
-        updated_activity = MessageFactory.attachment(card)
-        updated_activity.id = turn_context.activity.reply_to_id
-        await turn_context.update_activity(updated_activity)
+##########***天氣預報***#########  
 
-    async def _message_all_members(self, turn_context: TurnContext):
-        team_members = await TeamsInfo.get_members(turn_context)
-
-        for member in team_members:
-            conversation_reference = TurnContext.get_conversation_reference(
-                turn_context.activity
+        if event.message.text == "!天氣預報":
+            content = "請輸入欲查詢地點\n(目前限台灣本島+離島)\n\n使用方式如下(已設有防呆):\n!台北市\n!臺北市\n!台北\n!臺北\n!taipei"
+            await turn_context.send_activity(
+             MessageFactory.text(content)
             )
+            return 0
 
-            conversation_parameters = ConversationParameters(
-                is_group=False,
-                bot=turn_context.activity.recipient,
-                members=[member],
-                tenant_id=turn_context.activity.conversation.tenant_id,
+        if event.message.text == "!台北市" or event.message.text == "!臺北市" or event.message.text == "!台北" or event.message.text == "!臺北" or event.message.text == "!taipei":
+            content = weather(L=0)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
             )
-
-            async def get_ref(tc1):
-                conversation_reference_inner = TurnContext.get_conversation_reference(
-                    tc1.activity
-                )
-                return await tc1.adapter.continue_conversation(
-                    conversation_reference_inner, send_message, self._app_id
-                )
-
-            async def send_message(tc2: TurnContext):
-                return await tc2.send_activity(
-                    f"Hello {member.name}. I'm a Teams conversation bot."
-                )  # pylint: disable=cell-var-from-loop
-
-            await turn_context.adapter.create_conversation(
-                conversation_reference, get_ref, conversation_parameters
+            return 0
+        if event.message.text == "!新北市" or event.message.text == "!新北" or event.message.text == "!new taipei":
+            content = weather(L=1)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
             )
+            return 0
+        if event.message.text == "!桃園市" or event.message.text == "!taoyuan":
+            content = weather(L=2)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
+            )
+            return 0
+        if event.message.text == "!台中市" or event.message.text == "!臺中市" or event.message.text == "!台中" or event.message.text == "!臺中" or event.message.text == "!taichung":
+            content = weather(L=3)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
+            )
+            return 0
+        if event.message.text == "!台南市" or event.message.text == "!臺南市" or event.message.text == "!台南" or event.message.text == "!臺南" or event.message.text == "!tainan":
+            content = weather(L=4)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
+            )
+            return 0
+        if event.message.text == "!高雄市" or event.message.text == "!高雄" or event.message.text == "!kaohsiung":
+            content = weather(L=5)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
+            )
+            return 0
+        if event.message.text == "!基隆市" or event.message.text == "!基隆" or event.message.text == "!keelung":
+            content = weather(L=6)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
+            )
+            return 0
+        if event.message.text == "!新竹縣" or event.message.text == "!hsinchu county":
+            content = weather(L=7)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
+            )
+            return 0
+        if event.message.text == "!新竹市" or event.message.text == "!hsinchu city":
+            content = weather(L=8)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
+            )
+            return 0
+        if event.message.text == "!苗栗縣" or event.message.text == "!苗栗" or event.message.text == "!miaoli":
+            content = weather(L=9)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
+            )
+            return 0
+        if event.message.text == "!彰化縣" or event.message.text == "!彰化" or event.message.text == "!changhua":
+            content = weather(L=10)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
+            )
+            return 0
+        if event.message.text == "!南投縣" or event.message.text == "!南投" or event.message.text == "!nantou":
+            content = weather(L=11)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
+            )
+            return 0
+        if event.message.text == "!雲林縣" or event.message.text == "!雲林" or event.message.text == "!yunlin":
+            content = weather(L=12)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
+            )
+            return 0
+        if event.message.text == "!嘉義縣" or event.message.text == "!chiayi county":
+            content = weather(L=13)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
+            )
+            return 0
+        if event.message.text == "!嘉義市" or event.message.text == "!chiayi city":
+            content = weather(L=14)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
+            )
+            return 0
+        if event.message.text == "!屏東縣" or event.message.text == "!屏東" or event.message.text == "!pingtung":
+            content = weather(L=15)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
+            )
+            return 0
+        if event.message.text == "!宜蘭縣" or event.message.text == "!宜蘭" or event.message.text == "!ilan":
+            content = weather(L=16)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
+            )
+            return 0
+        if event.message.text == "!花蓮縣" or event.message.text == "!花蓮" or event.message.text == "!hualien":
+            content = weather(L=17)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
+            )
+            return 0
+        if event.message.text == "!臺東縣" or event.message.text == "!台東" or event.message.text == "!taitung":
+            content = weather(L=18)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
+            )
+            return 0
+        if event.message.text == "!澎湖縣" or event.message.text == "!澎湖" or event.message.text == "!penghu":
+            content = weather(L=19)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
+            )
+            return 0
+        if event.message.text == "!金門縣" or event.message.text == "!金門" or event.message.text == "!jinmen":
+            content = weather(L=20)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
+            )
+            return 0
+        if event.message.text == "!連江縣" or event.message.text == "!連江" or event.message.text == "!lianjiang":
+            content = weather(L=21)
+            await turn_context.send_activity(
+             MessageFactory.text(content)
+            )
+            return 0
 
-        await turn_context.send_activity(
-            MessageFactory.text("All messages have been sent")
-        )
 
-    async def _delete_card_activity(self, turn_context: TurnContext):
-        await turn_context.delete_activity(turn_context.activity.reply_to_id)
+    ##########***隱藏專區(需權限)***#########  
+
+
+
