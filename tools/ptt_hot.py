@@ -3,7 +3,6 @@ import requests
 import re
 import os
 from bs4 import BeautifulSoup
-from flask import Flask, request, abort
 #from imgurpython import ImgurClient
 from argparse import ArgumentParser
 
