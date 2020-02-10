@@ -1,0 +1,4 @@
+aiohttp
+requests
+botbuilder-core>=4.7.0
+gunicorn==20.0.4
