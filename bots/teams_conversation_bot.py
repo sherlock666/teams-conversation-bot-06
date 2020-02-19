@@ -12,24 +12,34 @@ class TeamsConversationBot(TeamsActivityHandler):
     def __init__(self, app_id: str, app_password: str):
         self._app_id = app_id
         self._app_password = app_password
+        print("self._app_id: "+self._app_id)
+        print("self._app_password: "+self._app_password)
 
     async def on_message_activity(self, turn_context: TurnContext):
         TurnContext.remove_recipient_mention(turn_context.activity)
         #turn_context.activity.text = turn_context.activity.text.strip()
         text = turn_context.activity.text.strip()
+        print("text: "+ text)
 
 
 
-        if text == "TestA":        
+        if text == "TestA":
+            reply = "我是回覆測試A"        
             await turn_context.send_activity(
-                MessageFactory.text("請輸入欲查詢地點\n(目前限台灣本島+離島)\n\n使用方式如下(已設有防呆):\n!台北市\n!臺北市\n!台北\n!臺北\n!taipei")
+                MessageFactory.text(reply)
             )
+            print(text)
+            print(reply)
             return 
 
-        if text == "TestB":        
+
+        if text == "TestB":     
+            reply = "I'm test reply B"    
             await turn_context.send_activity(
-                MessageFactory.text("Ending conversation from the skillB...")
+                MessageFactory.text(reply)
             )
+            print(text)
+            print(reply)
             return 
 
 ##########***天氣預報***#########  
@@ -40,7 +50,6 @@ class TeamsConversationBot(TeamsActivityHandler):
                 MessageFactory.text("請輸入欲查詢地點\n(目前限台灣本島+離島)\n\n使用方式如下(已設有防呆):\n!台北市\n!臺北市\n!台北\n!臺北\n!taipei")
             )
             return 0
-
         if text == "!台北市" or text == "!臺北市" or text == "!台北" or text == "!臺北" or text == "!taipei":
             content = weather(L=0)
             await turn_context.send_activity(
