@@ -5,7 +5,7 @@ gunicorn==20.0.4
 beautifulsoup4==4.5.3
 imgurpython==1.1.7
 pandas==0.25.2
-lxml==3.7.2
+lxml==4.6.2
 pycparser==2.14   
 Jinja2==2.10  
 httplib2==0.9.2   
